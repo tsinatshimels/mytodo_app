@@ -31,28 +31,63 @@ function Register() {
 
   return (
     <div>
-      <h2>Register</h2>
-      <br></br>
-      {message && <span>{message}</span>}
-      <form onSubmit={handleSubmit}>
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          type="email"
-          placeholder="Email"
-          required
-        />
-        <input
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          type="password"
-          placeholder="Password"
-          required
-        />
-        <button type="submit">Create Account</button>
-      </form>
-      <span>Already have an account?</span>
-      <Link to="/login">Log in.</Link>
+      <nav className="bg-gray-800 text-white p-4">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <Link to="/" className="text-xl font-bold">
+            Smart Hyperion
+          </Link>
+          <div>
+            <Link to="/login">Login</Link>
+          </div>
+        </div>
+      </nav>
+
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+            Register
+          </h2>
+          {message && (
+            <span className="block text-red-500 text-center mb-4">
+              {message}
+            </span>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              placeholder="Email"
+              required
+              autoComplete="new-password"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              placeholder="Password"
+              required
+              autoComplete="new-password"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+            >
+              Register
+            </button>
+          </form>
+          <p className="text-center text-gray-600 mt-4">
+            Already have an account?
+            <Link to="/login" className="text-blue-500 hover:underline">
+              {" "}
+              Log in.
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

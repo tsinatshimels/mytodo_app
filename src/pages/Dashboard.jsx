@@ -9,6 +9,7 @@ function Dashboard() {
     name: "",
     description: "",
     priority: "low",
+    time: "",
     deadline: "",
   });
   const [sortBy, setSortBy] = useState("deadline");
@@ -32,14 +33,12 @@ function Dashboard() {
       console.log("Error fetching: ", error);
     } else {
       let sortedData = data;
-
       if (sortBy === "priority") {
         const priorityOrder = { high: 1, medium: 2, low: 3 };
         sortedData = data.sort(
           (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
         );
       }
-
       setTodoList(sortedData);
     }
     setLoading(false);
@@ -66,10 +65,15 @@ function Dashboard() {
       console.log("Error adding todo: ", error);
     } else {
       setTodoList((prev) => [...prev, data[0]]);
-      setNewTodo({ name: "", description: "", priority: "low", deadline: "" });
+      setNewTodo({
+        name: "",
+        description: "",
+        priority: "low",
+        deadline: "",
+        time: "",
+      });
     }
   };
-
   const completeTask = async (id, isCompleted) => {
     const { error } = await supabase
       .from("Todolist")
@@ -128,22 +132,28 @@ function Dashboard() {
       year: "numeric",
     });
   };
+  const formatTime = (timeString) => {
+    return new Date(`1970-01-01T${timeString}`).toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
-    <div class=" mx-auto p-6 bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen text-white">
-      <h1 class="text-3xl font-bold text-center text-white-600 mb-6">
+    <div className=" mx-auto p-6 bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen text-white">
+      <h1 className="text-3xl font-bold text-center text-white-600 mb-6">
         Todo List
       </h1>
-      <div class="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         <input
-          class="border p-2 rounded w-full md:w-1/4"
+          className="border p-2 rounded w-full md:w-1/4"
           type="text"
           placeholder="Todo Name"
           value={newTodo.name}
           onChange={(e) => setNewTodo({ ...newTodo, name: e.target.value })}
         />
         <input
-          class="border p-2 rounded w-full md:w-1/4"
+          className="border p-2 rounded w-full md:w-1/4"
           type="text"
           placeholder="Description"
           value={newTodo.description}
@@ -152,45 +162,52 @@ function Dashboard() {
           }
         />
         <select
-          class=" border p-2 rounded w-full md:w-1/6"
+          className=" border p-2 rounded w-full md:w-1/6"
           value={newTodo.priority}
           onChange={(e) => setNewTodo({ ...newTodo, priority: e.target.value })}
         >
-          <option class="text-black " value="low">
+          <option className="text-black " value="low">
             Low
           </option>
-          <option class="text-black " value="medium">
+          <option className="text-black " value="medium">
             Medium
           </option>
-          <option class="text-black " value="high">
+          <option className="text-black " value="high">
             High
           </option>
         </select>
         <input
           type="date"
-          class="border p-2 rounded w-full md:w-1/6"
+          className="border p-2 rounded w-full md:w-1/6"
           value={newTodo.deadline}
           onChange={(e) => setNewTodo({ ...newTodo, deadline: e.target.value })}
         />
+        <input
+          type="time"
+          className="border p-2 rounded w-full md:w-1/6"
+          value={newTodo.time}
+          onChange={(e) => setNewTodo({ ...newTodo, time: e.target.value })}
+        />
+
         <button
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
           onClick={addTodo}
         >
           Add Todo
         </button>
       </div>
 
-      <div class="flex gap-2 justify-center items-center mb-4">
-        <label class="text-lg">Sort by: </label>
+      <div className="flex gap-2 justify-center items-center mb-4">
+        <label className="text-lg">Sort by: </label>
         <select
-          class="border p-2 rounded "
+          className="border p-2 rounded "
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option class="text-black " value="deadline">
+          <option className="text-black " value="deadline">
             Deadline
           </option>
-          <option class="text-black " value="priority">
+          <option className="text-black " value="priority">
             Priority
           </option>
         </select>
@@ -201,36 +218,37 @@ function Dashboard() {
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue border-solid"></div>
         </div>
       ) : (
-        <ul class="space-y-4 flex flex-wrap gap-4 justify-center flex-basis">
+        <ul className="space-y-4 flex flex-wrap gap-4 justify-center flex-basis">
           {todoList.map((todo) => (
             <li
               key={todo.id}
-              class="border p-4 rounded shadow-md bg-white text-black"
+              className="border p-4 rounded shadow-md bg-white text-black"
             >
-              <p class="font-semibold text-lg flex justify-center items-center gap-2">
+              <p className="font-semibold text-lg flex justify-center items-center gap-2">
                 {todo.name}{" "}
-                <span class="text-sm text-gray-500">({todo.priority})</span>
+                <span className="text-sm text-gray-500">({todo.priority})</span>
               </p>
               <p>Description: {todo.description}</p>
               <p>Must Finished: {formatDate(todo.deadline)}</p>
+              <p>Time: {todo.time ? formatTime(todo.time) : "Not Set"}</p>
               <p>Assigned in: {formatDate(todo.created_at)}</p>
 
-              <div class="flex space-x-2 mt-2">
+              <div className="flex space-x-2 mt-2">
                 <button
                   onClick={() => completeTask(todo.id, todo.isCompleted)}
-                  class="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-600"
+                  className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-600"
                 >
                   {todo.isCompleted ? "Undo" : "Complete Task"}
                 </button>
                 <button
                   onClick={() => startEditTask(todo)}
-                  class="bg-blue-400 text-black px-3 py-1 rounded hover:bg-blue-600"
+                  className="bg-blue-400 text-black px-3 py-1 rounded hover:bg-blue-600"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => deleteTask(todo.id)}
-                  class="bg-red-400 text-black px-3 py-1 rounded hover:bg-red-600"
+                  className="bg-red-400 text-black px-3 py-1 rounded hover:bg-red-600"
                 >
                   Delete
                 </button>
@@ -244,27 +262,29 @@ function Dashboard() {
 
       {/* Edit Modal */}
       {editTodo && (
-        <div class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white text-black p-6 border rounded shadow-lg">
-          <h2 class="text-2xl font-bold mb-4 flex justify-center">Edit Task</h2>
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white text-black p-6 border rounded shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 flex justify-center">
+            Edit Task
+          </h2>
           <input
             type="text"
             name="name"
             value={editTodo.name}
             onChange={handleEditChange}
-            class="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded w-full mb-2"
           />
           <input
             type="text"
             name="description"
             value={editTodo.description}
             onChange={handleEditChange}
-            class="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded w-full mb-2"
           />
           <select
             name="priority"
             value={editTodo.priority}
             onChange={handleEditChange}
-            class="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded w-full mb-2"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -275,17 +295,17 @@ function Dashboard() {
             name="deadline"
             value={editTodo.deadline}
             onChange={handleEditChange}
-            class="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded w-full mb-2"
           />
-          <div class="flex space-x-2 justify-center mt-2">
+          <div className="flex space-x-2 justify-center mt-2">
             <button
-              class="bg-green-400 text-black px-4 py-2 rounded hover:bg-green-600"
+              className="bg-green-400 text-black px-4 py-2 rounded hover:bg-green-600"
               onClick={saveEditTask}
             >
               Save
             </button>
             <button
-              class="bg-green-400 text-black px-4 py-2 rounded hover:bg-green-600"
+              className="bg-green-400 text-black px-4 py-2 rounded hover:bg-green-600"
               onClick={() => setEditTodo(null)}
             >
               Cancel
